@@ -73,103 +73,119 @@ Customization:
     </div>
   </div>
 
-  <script>
-    // ====== تنظیمات فال‌ها ======
-    // این آرایه را به دلخواه ویرایش، حذف یا اضافه کنید.
-    const fortunes = [
-      {text: 'دوش دیدم که ملایک در میخانه زدند — گل آدم بسرشتند و به پیمانه زدند', ref: 'حافظ'},
-      {text: 'هر آن کس که نان از عمل خویش خورد — بر آرد رنج پاکان نمی‌خورد', ref: 'حافظ'},
-      {text: 'بیا که ترک فلک خواند این قصهٔ غم — قصهٔ آنکه نمی‌بیند جمال دوست', ref: 'حافظ'},
-      {text: 'چون به ما رسید آتش هجران تو — هر چه در عالم بود بی‌اثر شد', ref: 'حافظ'},
-      {text: 'بیعقل نبندد کسی خاطر به دوست — هر کجا یاری رساند حق شناسی بود', ref: 'حافظ'},
-      {text: 'دل می‌رود ز دستم، صاحب دلان خدا را — درماندگیست مرا این فسونِ تو', ref: 'حافظ'},
-      {text: 'خرقهٔ صوفیان به صرف روزیست — یوسف گمگشته باز آید به کنعان غم مخور', ref: 'حافظ'},
-      {text: 'دلا دیدی که رسوا شدم از بس هوشتم — هر که را نانی نیست برومد بر عشقم', ref: 'حافظ'},
-      {text: 'هر نفسی که فرو می‌رود ممد حیات است — چون نائیکی کنی، نیکی از توست باز', ref: 'حافظ'},
-      {text: 'تو را چه دیدم که به جان و جهانی دوستت دارم — خدا کند که همیشه یاری برساند', ref: 'حافظ'}
-    ];
+<script>
+    // ====== تنظیمات فال‌ها ======
+    // این آرایه را به دلخواه ویرایش، حذف یا اضافه کنید.
+    const fortunes = [
+      {text: 'دوش دیدم که ملایک در میخانه زدند — گل آدم بسرشتند و به پیمانه زدند', ref: 'حافظ'},
+      {text: 'هر آن کس که نان از عمل خویش خورد — بر آرد رنج پاکان نمی‌خورد', ref: 'حافظ'},
+      {text: 'بیا که ترک فلک خواند این قصهٔ غم — قصهٔ آنکه نمی‌بیند جمال دوست', ref: 'حافظ'},
+      {text: 'چون به ما رسید آتش هجران تو — هر چه در عالم بود بی‌اثر شد', ref: 'حافظ'},
+      {text: 'بیعقل نبندد کسی خاطر به دوست — هر کجا یاری رساند حق شناسی بود', ref: 'حافظ'},
+      {text: 'دل می‌رود ز دستم، صاحب دلان خدا را — درماندگیست مرا این فسونِ تو', ref: 'حافظ'},
+      {text: 'خرقهٔ صوفیان به صرف روزیست — یوسف گمگشته باز آید به کنعان غم مخور', ref: 'حافظ'},
+      {text: 'دلا دیدی که رسوا شدم از بس هوشتم — هر که را نانی نیست برومد بر عشقم', ref: 'حافظ'},
+      {text: 'هر نفسی که فرو می‌رود ممد حیات است — چون نائیکی کنی، نیکی از توست باز', ref: 'حافظ'},
+      {text: 'تو را چه دیدم که به جان و جهانی دوستت دارم — خدا کند که همیشه یاری برساند', ref: 'حافظ'}
+    ];
 
-    // ====== helpers ======
-    const el = id => document.getElementById(id);
-    const fortuneBox = el('fortuneBox');
-    const getBtn = el('getBtn');
-    const anotherBtn = el('anotherBtn');
-    const copyBtn = el('copyBtn');
-    const shareHint = el('shareHint');
+    // ====== helpers ======
+    const el = id => document.getElementById(id);
+    const fortuneBox = el('fortuneBox');
+    const getBtn = el('getBtn');
+    const anotherBtn = el('anotherBtn');
+    const copyBtn = el('copyBtn');
+    const shareHint = el('shareHint');
 
-    function showFortune(index){
-      const f = fortunes[index];
-      if(!f) return;
-      // animate
-      fortuneBox.classList.remove('fade-enter');
-      void fortuneBox.offsetWidth; // force reflow
-      fortuneBox.classList.add('fade-enter');
+    function showFortune(index){
+      const f = fortunes[index];
+      if(!f) return;
+      // animate
+      fortuneBox.classList.remove('fade-enter');
+      void fortuneBox.offsetWidth; // force reflow
+      fortuneBox.classList.add('fade-enter');
 
-      fortuneBox.innerHTML = `<div><strong>${escapeHtml(f.text)}</strong><small> — ${escapeHtml(f.ref)}</small></div>`;
-      // update URL so it can be shared
-      const base = location.origin + location.pathname;
-      const newUrl = base + '?i=' + index;
-      history.replaceState(null, '', newUrl);
-      shareHint.textContent = 'برای کپی لینک فال، روی «کپی لینک این فال» بزنید';
-    }
+      fortuneBox.innerHTML = `<div><strong>${escapeHtml(f.text)}</strong><small> — ${escapeHtml(f.ref)}</small></div>`;
+      // update URL so it can be shared
+      const base = location.origin + location.pathname;
+      const newUrl = base + '?i=' + index;
+      history.replaceState(null, '', newUrl);
+      shareHint.textContent = 'برای کپی لینک فال، روی «کپی لینک این فال» بزنید';
+    }
 
-    function getRandomIndex(){
-      return Math.floor(Math.random() * fortunes.length);
-    }
+    function getRandomIndex(){
+      return Math.floor(Math.random() * fortunes.length);
+    }
 
-    function copyToClipboard(text){
-      if(navigator.clipboard && navigator.clipboard.writeText){
-        return navigator.clipboard.writeText(text);
-      } else {
-        // fallback
-        const ta = document.createElement('textarea');
-        ta.value = text; document.body.appendChild(ta); ta.select();
-        try{ document.execCommand('copy'); }catch(e){}
-        ta.remove();
-        return Promise.resolve();
-      }
-    }
-
-    function escapeHtml(s){
-      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    }
-
-    // ====== events ======
-    getBtn.addEventListener('click', ()=>{
-      const idx = getRandomIndex();
-      showFortune(idx);
-    });
-
-    anotherBtn.addEventListener('click', ()=>{
-      const idx = getRandomIndex();
-      showFortune(idx);
-    });
-
-    copyBtn.addEventListener('click', ()=>{
-      const url = location.href;
-      copyToClipboard(url).then(()=>{
-        copyBtn.textContent = 'لینک کپی شد ✅';
-        setTimeout(()=>{ copyBtn.textContent = 'کپی لینک این فال'; }, 2500);
-      });
-    });
-
-    // show specific fortune if ?i=N present
-    (function loadFromQuery(){
-      const params = new URLSearchParams(location.search);
-      const i = params.get('i');
-      if(i !== null){
-        const n = parseInt(i,10);
-        if(!isNaN(n) && n >=0 && n < fortunes.length){
-          showFortune(n);
+    function copyToClipboard(text){
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        return navigator.clipboard.writeText(text);
+      } else {
+        // fallback for older browsers: creates a temp textarea to copy
+        const ta = document.createElement('textarea');
+        ta.style.position = 'fixed'; // Prevents scrolling to the bottom of the page in some browsers
+        ta.style.opacity = '0';
+        ta.value = text; 
+        document.body.appendChild(ta); 
+        ta.focus();
+        ta.select();
+        try{ 
+            document.execCommand('copy'); 
+        }catch(e){
+            console.error('Copy command failed:', e);
         }
-      }
-    })();
+        ta.remove();
+        return Promise.resolve();
+      }
+    }
 
-    // accessibility: keyboard shortcuts
-    document.addEventListener('keydown', (e)=>{
-      if(e.key === 'Enter') getBtn.click();
-      if(e.key.toLowerCase() === 'r') anotherBtn.click();
-    });
-  </script>
+    function escapeHtml(s){
+      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    // ====== events ======
+    getBtn.addEventListener('click', ()=>{
+      const idx = getRandomIndex();
+      showFortune(idx);
+    });
+
+    anotherBtn.addEventListener('click', ()=>{
+      const idx = getRandomIndex();
+      showFortune(idx);
+    });
+
+    copyBtn.addEventListener('click', ()=>{
+      const url = location.href;
+      // مطمئن می شویم که یک فال در صفحه وجود دارد تا لینک آن کپی شود
+      if(url.indexOf('?i=') === -1){
+           copyBtn.textContent = 'اول یک فال بگیرید';
+           setTimeout(()=>{ copyBtn.textContent = 'کپی لینک این فال'; }, 2500);
+           return;
+      }
+
+      copyToClipboard(url).then(()=>{
+        copyBtn.textContent = 'لینک کپی شد ✅';
+        setTimeout(()=>{ copyBtn.textContent = 'کپی لینک این فال'; }, 2500);
+      });
+    });
+
+    // show specific fortune if ?i=N present
+    (function loadFromQuery(){
+      const params = new URLSearchParams(location.search);
+      const i = params.get('i');
+      if(i !== null){
+        const n = parseInt(i,10);
+        if(!isNaN(n) && n >=0 && n < fortunes.length){
+          showFortune(n);
+        }
+      }
+    })();
+
+    // accessibility: keyboard shortcuts
+    document.addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter') getBtn.click();
+      if(e.key.toLowerCase() === 'r') anotherBtn.click();
+    });
+  </script>
 </body>
 </html>
