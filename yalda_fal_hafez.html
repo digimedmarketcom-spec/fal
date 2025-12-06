@@ -1,0 +1,174 @@
+<!--
+File: index.html
+Purpose: A single-file webpage for Yalda greeting + "فال حافظ" button.
+How to use:
+ 1) Put this file in the root of a GitHub repository (filename: index.html).
+ 2) Enable GitHub Pages for repository (branch: main, folder: / (root)).
+ 3) Share the URL: https://<your-username>.github.io/<repo-name>/
+
+Customization:
+ - Edit the <title> and the greeting text in the HTML.
+ - Edit the `fortunes` array in the script to change/add Hafez verses.
+ - You can share a specific fortune by linking to the page with ?i=N (0-based index).
+-->
+
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>یلدا مبارک — فال حافظ</title>
+  <style>
+    :root{--bg:#0f172a;--card:#0b1220;--accent:#f59e0b;--muted:#94a3b8}
+    *{box-sizing:border-box;font-family:Vazirmatn, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,#001219 0%,#06202b 100%);color:#e6eef8}
+    .wrap{min-height:100%;display:flex;align-items:center;justify-content:center;padding:32px}
+    .card{width:100%;max-width:760px;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));border-radius:16px;padding:28px;box-shadow:0 10px 30px rgba(2,6,23,0.6);border:1px solid rgba(255,255,255,0.03)}
+    header{display:flex;align-items:center;gap:16px}
+    .moon{width:72px;height:72px;border-radius:50%;background:radial-gradient(circle at 35% 30%, #fff3c4, #ffd58a 20%, #ffd58a 22%, rgba(255,255,255,0.02) 60%);box-shadow:0 8px 30px rgba(245,158,11,0.14)}
+    h1{margin:0;font-size:22px}
+    p.lead{margin:8px 0 18px;color:var(--muted)}
+
+    .actions{display:flex;gap:12px;flex-wrap:wrap}
+    button, .link-btn{appearance:none;border:0;padding:10px 16px;border-radius:10px;font-weight:600;cursor:pointer}
+    button.primary{background:linear-gradient(90deg,var(--accent),#fb923c);color:#071029}
+    button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+
+    .fortune{margin-top:18px;padding:18px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));min-height:110px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:18px}
+    .fortune small{display:block;margin-top:8px;color:var(--muted);font-size:13px}
+
+    .footer{display:flex;justify-content:space-between;align-items:center;margin-top:16px;color:var(--muted);font-size:13px}
+
+    @media (max-width:540px){.card{padding:18px}.moon{width:56px;height:56px}h1{font-size:18px}}
+
+    /* simple fade animation when fortune changes */
+    .fade-enter{opacity:0;transform:translateY(6px)}
+    .fade-enter.fade-enter-active{opacity:1;transform:none;transition:all 320ms cubic-bezier(.2,.9,.3,1)}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card" role="main">
+      <header>
+        <div class="moon" aria-hidden="true"></div>
+        <div>
+          <h1>یلدای شما مبارک — تیم شما</h1>
+          <p class="lead">یک شبِ گرم و نورانی، با تبریک و یک فال حافظ برای هر همکار — فقط روی دکمه کلیک کن!</p>
+        </div>
+      </header>
+
+      <div style="margin-top:14px" class="actions">
+        <button id="getBtn" class="primary">دریافت فال حافظ</button>
+        <button id="anotherBtn" class="ghost">یک فال دیگر</button>
+        <button id="copyBtn" class="ghost">کپی لینک این فال</button>
+      </div>
+
+      <div id="fortuneBox" class="fortune" aria-live="polite">برای دریافت فال، روی «دریافت فال حافظ" کلیک کنید.</div>
+
+      <div class="footer">
+        <div>📜 اشعار حافظ — با آرزوی قلبی برای شب یلدا</div>
+        <div>Share: <span id="shareHint">کلیک کنید تا لینک فال را کپی کنید</span></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ====== تنظیمات فال‌ها ======
+    // این آرایه را به دلخواه ویرایش، حذف یا اضافه کنید.
+    const fortunes = [
+      {text: 'دوش دیدم که ملایک در میخانه زدند — گل آدم بسرشتند و به پیمانه زدند', ref: 'حافظ'},
+      {text: 'هر آن کس که نان از عمل خویش خورد — بر آرد رنج پاکان نمی‌خورد', ref: 'حافظ'},
+      {text: 'بیا که ترک فلک خواند این قصهٔ غم — قصهٔ آنکه نمی‌بیند جمال دوست', ref: 'حافظ'},
+      {text: 'چون به ما رسید آتش هجران تو — هر چه در عالم بود بی‌اثر شد', ref: 'حافظ'},
+      {text: 'بیعقل نبندد کسی خاطر به دوست — هر کجا یاری رساند حق شناسی بود', ref: 'حافظ'},
+      {text: 'دل می‌رود ز دستم، صاحب دلان خدا را — درماندگیست مرا این فسونِ تو', ref: 'حافظ'},
+      {text: 'خرقهٔ صوفیان به صرف روزیست — یوسف گمگشته باز آید به کنعان غم مخور', ref: 'حافظ'},
+      {text: 'دلا دیدی که رسوا شدم از بس هوشتم — هر که را نانی نیست برومد بر عشقم', ref: 'حافظ'},
+      {text: 'هر نفسی که فرو می‌رود ممد حیات است — چون نائیکی کنی، نیکی از توست باز', ref: 'حافظ'},
+      {text: 'تو را چه دیدم که به جان و جهانی دوستت دارم — خدا کند که همیشه یاری برساند', ref: 'حافظ'}
+    ];
+
+    // ====== helpers ======
+    const el = id => document.getElementById(id);
+    const fortuneBox = el('fortuneBox');
+    const getBtn = el('getBtn');
+    const anotherBtn = el('anotherBtn');
+    const copyBtn = el('copyBtn');
+    const shareHint = el('shareHint');
+
+    function showFortune(index){
+      const f = fortunes[index];
+      if(!f) return;
+      // animate
+      fortuneBox.classList.remove('fade-enter');
+      void fortuneBox.offsetWidth; // force reflow
+      fortuneBox.classList.add('fade-enter');
+
+      fortuneBox.innerHTML = `<div><strong>${escapeHtml(f.text)}</strong><small> — ${escapeHtml(f.ref)}</small></div>`;
+      // update URL so it can be shared
+      const base = location.origin + location.pathname;
+      const newUrl = base + '?i=' + index;
+      history.replaceState(null, '', newUrl);
+      shareHint.textContent = 'برای کپی لینک فال، روی «کپی لینک این فال» بزنید';
+    }
+
+    function getRandomIndex(){
+      return Math.floor(Math.random() * fortunes.length);
+    }
+
+    function copyToClipboard(text){
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        return navigator.clipboard.writeText(text);
+      } else {
+        // fallback
+        const ta = document.createElement('textarea');
+        ta.value = text; document.body.appendChild(ta); ta.select();
+        try{ document.execCommand('copy'); }catch(e){}
+        ta.remove();
+        return Promise.resolve();
+      }
+    }
+
+    function escapeHtml(s){
+      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    // ====== events ======
+    getBtn.addEventListener('click', ()=>{
+      const idx = getRandomIndex();
+      showFortune(idx);
+    });
+
+    anotherBtn.addEventListener('click', ()=>{
+      const idx = getRandomIndex();
+      showFortune(idx);
+    });
+
+    copyBtn.addEventListener('click', ()=>{
+      const url = location.href;
+      copyToClipboard(url).then(()=>{
+        copyBtn.textContent = 'لینک کپی شد ✅';
+        setTimeout(()=>{ copyBtn.textContent = 'کپی لینک این فال'; }, 2500);
+      });
+    });
+
+    // show specific fortune if ?i=N present
+    (function loadFromQuery(){
+      const params = new URLSearchParams(location.search);
+      const i = params.get('i');
+      if(i !== null){
+        const n = parseInt(i,10);
+        if(!isNaN(n) && n >=0 && n < fortunes.length){
+          showFortune(n);
+        }
+      }
+    })();
+
+    // accessibility: keyboard shortcuts
+    document.addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter') getBtn.click();
+      if(e.key.toLowerCase() === 'r') anotherBtn.click();
+    });
+  </script>
+</body>
+</html>
